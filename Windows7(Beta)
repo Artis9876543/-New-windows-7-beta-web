@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Windows 7 Web OS</title>
+    <link rel="stylesheet" href="https://unpkg.com/7.css">
+    <style>
+        :root { --bg-color: #3a7ebf; }
+        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: "Segoe UI", sans-serif; }
+
+        /* --- 1. BOOT ANIMATION --- */
+        #boot-screen {
+            position: fixed; inset: 0; background: black; z-index: 200000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .cube-container { display: grid; grid-template-columns: 20px 20px; gap: 5px; margin-bottom: 20px; }
+        .cube { width: 20px; height: 20px; animation: pulse 1.5s infinite; }
+        .c1 { background: #ed1c24; } .c2 { background: #3ab54a; animation-delay: 0.2s; }
+        .c3 { background: #00a1f1; animation-delay: 0.4s; } .c4 { background: #ffb900; animation-delay: 0.6s; }
+        @keyframes pulse { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
+        #boot-text { color: white; font-size: 14px; letter-spacing: 2px; }
+
+        /* --- 2. LOCK SCREEN --- */
+        #lock-screen {
+            position: fixed; inset: 0; z-index: 150000;
+            display: none; flex-direction: column; align-items: center; justify-content: center; color: white;
+            background: url('14121.jpg') center/cover;
+        }
+        .user-avatar { 
+            width: 100px; height: 100px; border: 3px solid white; border-radius: 8px; 
+            margin-bottom: 10px; background: url('https://img.icons8.com/color/100/000000/dog.png') center/cover; 
+        }
+        
+        /* --- 3. DESKTOP --- */
+        #desktop-environment { 
+            display: none; height: 100vh; position: relative; 
+            background: var(--bg-color) url('14121.jpg') no-repeat center center fixed; 
+            background-size: cover;
+        }
+        #desktop-icons { padding: 20px; display: flex; flex-direction: column; gap: 20px; z-index: 10; position: relative; }
+        .icon { width: 70px; text-align: center; color: white; cursor: pointer; text-shadow: 1px 1px 2px black; font-size: 11px; }
+        .icon img { width: 42px; display: block; margin: 0 auto 5px; }
+
+        /* --- 4. TASKBAR (FRUTIGER AERO STYLE) --- */
+        #taskbar { 
+            position: fixed; bottom: 0; width: 100%; height: 40px; 
+            background: rgba(255, 255, 255, 0.25); 
+            backdrop-filter: blur(15px); 
+            border-top: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+            z-index: 100000; display: flex; align-items: center; justify-content: space-between;
+        }
+        #startOrb { width: 36px; cursor: pointer; margin-left: 5px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+        .taskbar-right { color: white; padding-right: 15px; font-size: 12px; text-shadow: 1px 1px 2px black; }
+
+        /* --- START MENU --- */
+        #startMenu { position: fixed; bottom: 40px; left: 0; width: 380px; height: 450px; background: white; border: 1px solid #777; display: none; z-index: 100001; box-shadow: 2px -2px 20px rgba(0,0,0,0.5); }
+        .menu-right { background: #dae7f5; width: 40%; height: 100%; float: right; padding: 10px; font-size: 12px; border-left: 1px solid #adc9e7; }
+        .start-user-area { display: flex; align-items: center; gap: 10px; padding: 15px; background: linear-gradient(to bottom, #f0f0f0, #e0e0e0); border-bottom: 1px solid #ccc; }
+        .start-dog-pic { width: 45px; height: 45px; border: 2px solid white; border-radius: 4px; background: url('https://img.icons8.com/color/100/000000/dog.png') center/cover; }
+
+        /* WINDOWS */
+        .window { position: absolute; z-index: 500; display: none; min-width: 320px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); }
+        .calc-btn { width: 40px; height: 35px; margin: 2px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="boot-screen">
+        <div class="cube-container">
+            <div class="cube c1"></div><div class="cube c2"></div>
+            <div class="cube c3"></div><div class="cube c4"></div>
+        </div>
+        <div id="boot-text">Starting Windows</div>
+    </div>
+
+    <div id="lock-screen">
+        <div class="user-avatar"></div>
+        <h2 id="username-display">Win7</h2>
+        <input type="password" id="pass-input" placeholder="Password">
+        <button onclick="unlock()">Enter</button>
+    </div>
+
+    <div id="desktop-environment">
+        <div id="desktop-icons">
+            <div class="icon" onclick="openApp('explorerWin')">
+                <img src="https://img.icons8.com/color/48/000000/monitor--v1.png">Computer
+            </div>
+            <div class="icon" onclick="openApp('calcWin')">
+                <img src="https://img.icons8.com/color/48/000000/calculator.png">Calculator
+            </div>
+            <div class="icon" onclick="openApp('controlWin')">
+                <img src="https://img.icons8.com/color/48/000000/control-panel.png">Control Panel
+            </div>
+        </div>
+
+        <div id="startMenu">
+            <div class="start-user-area">
+                <div class="start-dog-pic"></div>
+                <b>Win7 User</b>
+            </div>
+            <div class="menu-right">
+                <div onclick="openApp('controlWin')" style="cursor:pointer; margin-bottom:10px;">Control Panel</div>
+                <hr>
+                <div onclick="restartSystem()" style="cursor:pointer; font-weight:bold; color:red;">Restart</div>
+            </div>
+            <div style="padding:10px;">
+                <div onclick="openApp('explorerWin')" style="cursor:pointer; margin-bottom:10px;">📁 Computer</div>
+                <div onclick="openApp('calcWin')" style="cursor:pointer;">🔢 Calculator</div>
+            </div>
+        </div>
+
+        <div class="window" id="calcWin">
+            <div class="title-bar"><div class="title-bar-text">Calculator</div><div class="title-bar-controls"><button aria-label="Close" onclick="closeApp('calcWin')"></button></div></div>
+            <div class="window-body">
+                <input id="calc-display" style="width:100%; text-align:right; margin-bottom:10px; font-size: 18px;" readonly value="0">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr);">
+                    <button class="calc-btn" onclick="press('7')">7</button><button class="calc-btn" onclick="press('8')">8</button><button class="calc-btn" onclick="press('9')">9</button><button class="calc-btn" onclick="press('/')">/</button>
+                    <button class="calc-btn" onclick="press('4')">4</button><button class="calc-btn" onclick="press('5')">5</button><button class="calc-btn" onclick="press('6')">6</button><button class="calc-btn" onclick="press('*')">*</button>
+                    <button class="calc-btn" onclick="press('1')">1</button><button class="calc-btn" onclick="press('2')">2</button><button class="calc-btn" onclick="press('3')">3</button><button class="calc-btn" onclick="press('-')">-</button>
+                    <button class="calc-btn" onclick="press('0')">0</button><button class="calc-btn" onclick="clr()">C</button><button class="calc-btn" onclick="equal()">=</button><button class="calc-btn" onclick="press('+')">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="window" id="controlWin" style="width:300px;">
+            <div class="title-bar"><div class="title-bar-text">Control Panel</div><div class="title-bar-controls"><button aria-label="Close" onclick="closeApp('controlWin')"></button></div></div>
+            <div class="window-body">
+                <p>Personalization:</p>
+                <button onclick="setBGImg('14121.jpg')">Blue Desktop</button>
+                <button onclick="setBGImg('14124.jpg')">Green Field</button>
+            </div>
+        </div>
+
+        <div class="window" id="explorerWin" style="width:400px;">
+            <div class="title-bar"><div class="title-bar-text">Computer</div><div class="title-bar-controls"><button aria-label="Close" onclick="closeApp('explorerWin')"></button></div></div>
+            <div class="window-body" style="background:white; height:200px; padding:10px;">
+                <div style="text-align:center;"><img src="https://img.icons8.com/color/48/000000/hard-drive.png"><br>Local Disk (C:)</div>
+            </div>
+        </div>
+
+        <div id="taskbar">
+            <img id="startOrb" src="14120.jpg" onclick="toggleStart()">
+            <div class="taskbar-right" id="clock">00:00 AM</div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/draggabilly@3/dist/draggabilly.pkgd.min.js"></script>
+    <script>
+        // --- BOOT SEQUENCE ---
+        setTimeout(() => {
+            document.getElementById('boot-screen').style.display = 'none';
+            document.getElementById('lock-screen').style.display = 'flex';
+        }, 4000);
+
+        function unlock() {
+            const pass = document.getElementById('pass-input').value;
+            if(pass !== "") { 
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('desktop-environment').style.display = 'block';
+            } else { alert("Please enter a password"); }
+        }
+
+        function restartSystem() { location.reload(); }
+
+        // --- CLOCK ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // --- CALCULATOR LOGIC ---
+        let expression = "";
+        function press(num) { expression += num; document.getElementById('calc-display').value = expression; }
+        function clr() { expression = ""; document.getElementById('calc-display').value = "0"; }
+        function equal() { 
+            try { expression = eval(expression).toString(); document.getElementById('calc-display').value = expression; } 
+            catch { document.getElementById('calc-display').value = "Error"; expression = ""; }
+        }
+
+        // --- CORE FUNCTIONS ---
+        function setBGImg(img) { document.getElementById('desktop-environment').style.backgroundImage = "url('" + img + "')"; }
+        
+        function openApp(id) {
+            const win = document.getElementById(id);
+            win.style.display = 'block';
+            new Draggabilly(win, { handle: '.title-bar' });
+            document.getElementById('startMenu').style.display = 'none';
+        }
+
+        function closeApp(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function toggleStart() {
+            const m = document.getElementById('startMenu');
+            m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>
+
